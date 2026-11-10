@@ -228,7 +228,7 @@ data class AppSpec(
     val screens: List<ScreenSpec>,
     val entities: List<EntitySpec>,
     val permissions: List<String>,
-    val complexity: AppBuilderMode.Complexity
+    val complexity: Complexity
 )
 
 data class ScreenSpec(
