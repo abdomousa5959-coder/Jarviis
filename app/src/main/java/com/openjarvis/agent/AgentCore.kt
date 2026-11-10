@@ -29,7 +29,7 @@ class AgentCore(private val context: Context) {
     private val graphifyRepo = GraphifyRepository(context)
     private val analysisEngine = AnalysisEngine(context)
     private val universalAdapter = UniversalAdapter(context)
-    private val screenReader = ScreenReader(context)
+    private val screenReader = ScreenReader(JarvisAccessibilityService.instance)
     private val visionModule = VisionModule.getInstance(context)
     private val taskRouter = TaskRouter(context)
     private val appAnalyzer = AppAnalyzer(context)
@@ -92,7 +92,7 @@ fun executeTask(cleanCommand: String) {
                     when (sanitized) {
                         is PromptSanitizer.SanitizeResult.Rejected -> {
                             _state.value = AgentState.Error(sanitized.reason)
-                            return@taskMutex.withLock
+                            return@withLock
                         }
                         is PromptSanitizer.SanitizeResult.Suspicious -> {
                             _state.value = AgentState.Running("analyzing...")
@@ -164,7 +164,7 @@ fun executeTask(cleanCommand: String) {
                         executeActions(actions)
                         
                         graphifyRepo.logTask(
-                            cleanCommand = cleanCommand,
+                            command = cleanCommand,
                             result = "success",
                             provider = universalAdapter.getProviderName(),
                             latencyMs = latency
