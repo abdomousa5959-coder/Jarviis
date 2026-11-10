@@ -123,8 +123,7 @@ class AutomationManager(private val context: Context) {
             }
         }
         
-        WorkManager.getInstance(context)
-            .enqueueUniqueWork(automation.id, ExistingWorkPolicy.REPLACE, request)
+        WorkManager.getInstance(context).enqueue(request)
     }
     
     private fun cancelAutomation(id: String) {
