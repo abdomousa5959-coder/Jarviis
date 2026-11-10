@@ -27,7 +27,7 @@ class AutomationManager(private val context: Context) {
         
         scheduleAutomation(automation)
         
-        _automationsFlow.value = dao.getAll()
+        _automationsFlow.value = dao.getAll().map { it.toAutomation() }
         automation.id
     }
     
@@ -39,13 +39,13 @@ class AutomationManager(private val context: Context) {
             scheduleAutomation(automation)
         }
         
-        _automationsFlow.value = dao.getAll()
+        _automationsFlow.value = dao.getAll().map { it.toAutomation() }
     }
     
     suspend fun deleteAutomation(id: String) = withContext(Dispatchers.IO) {
         cancelAutomation(id)
         dao.delete(id)
-        _automationsFlow.value = dao.getAll()
+        _automationsFlow.value = dao.getAll().map { it.toAutomation() }
     }
     
     suspend fun toggleAutomation(id: String, enabled: Boolean) = withContext(Dispatchers.IO) {
@@ -59,7 +59,7 @@ class AutomationManager(private val context: Context) {
             cancelAutomation(id)
         }
         
-        _automationsFlow.value = dao.getAll()
+        _automationsFlow.value = dao.getAll().map { it.toAutomation() }
     }
     
     suspend fun runNow(id: String) = withContext(Dispatchers.IO) {
