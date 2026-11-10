@@ -49,7 +49,6 @@ class SocketServer(
         private const val SOCKET_NAME = "jarvis.port"
         private const val MAX_COMMAND_LENGTH = 2000
         private const val MAX_REQUESTS_PER_SECOND = 10
-        const val SOCKET_NAME = "jarvis.port"
     }
     
     fun start() {
