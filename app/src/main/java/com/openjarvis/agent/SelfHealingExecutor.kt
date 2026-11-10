@@ -2,15 +2,16 @@ package com.openjarvis.agent
 
 import android.content.Context
 import com.openjarvis.accessibility.ScreenReader
+import com.openjarvis.accessibility.JarvisAccessibilityService
 import com.openjarvis.graphify.GraphifyRepository
 import com.openjarvis.llm.UniversalAdapter
 import kotlinx.coroutines.delay
 
 class SelfHealingExecutor(private val context: Context) {
     
-    private val screenReader = ScreenReader(context)
+    private val screenReader = ScreenReader(JarvisAccessibilityService.instance)
     private val graphifyRepo = GraphifyRepository(context)
-    private val llm = UniversalAdapter.getModelManager(context)
+    private val llm = UniversalAdapter(context)
     
     private val maxAttempts = 3
     private val baseDelayMs = 1000L
@@ -23,7 +24,7 @@ class SelfHealingExecutor(private val context: Context) {
         
         val result = tryExecuteAction(action, context)
         
-        if (result.success) return result
+        if (result is ActionResult.Success) return result
         
         if (attempt >= maxAttempts) {
             return ActionResult.Failed("Could not complete after $maxAttempts attempts")
@@ -33,11 +34,7 @@ class SelfHealingExecutor(private val context: Context) {
         
         val healingPrompt = buildHealingPrompt(action, context, currentScreen, attempt)
         
-        val alternativeResponse = try {
-            llm.complete(healingPrompt.first, healingPrompt.second)
-        } catch (e: Exception) {
-            null
-        }
+        val alternativeResponse = try { llm.complete(healingPrompt.first, healingPrompt.second).getOrNull() } catch (e: Exception) { null }
         
         delay(baseDelayMs * attempt)
         
@@ -58,11 +55,11 @@ class SelfHealingExecutor(private val context: Context) {
             when (action.action) {
                 Action.TAP -> {
                     val tapped = service?.tapByText(action.text ?: "")
-                    ActionResult.Success(if (tapped) "tapped ${action.text}" else "tap failed")
+                    ActionResult.Success(if (tapped == true) "tapped ${action.text}" else "tap failed")
                 }
                 Action.TYPE -> {
                     val typed = service?.typeText(action.value ?: "")
-                    ActionResult.Success(if (typed) "typed ${action.value}" else "type failed")
+                    ActionResult.Success(if (typed == true) "typed ${action.value}" else "type failed")
                 }
                 Action.OPEN_APP -> {
                     service?.openAppByPackage(action.packageName ?: "")
@@ -86,7 +83,7 @@ class SelfHealingExecutor(private val context: Context) {
         attempt: Int
     ): Pair<String, String> {
         val system = """
-Action failed: ${action.description ?: action.action}
+Action failed: ${action.action}
 Expected to see: ${context.expectedState ?: "task completion"}
 Current screen shows: ${currentScreen.take(500)}
 Attempt: $attempt/$maxAttempts
