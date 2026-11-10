@@ -770,7 +770,7 @@ private fun PermissionRow(
             }
             
             Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                imageVector = Icons.Filled.KeyboardArrowRight,
                 contentDescription = null,
                 tint = VoidColor.Red
             )
