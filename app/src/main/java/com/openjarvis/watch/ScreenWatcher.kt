@@ -23,7 +23,7 @@ class ScreenWatcher(private val context: Context, private val agentCore: com.ope
     val state: StateFlow<WatcherState> = _state
     
     private val rules = mutableListOf<WatchRule>()
-    private val screenReader = ScreenReader(context)
+    private val screenReader = ScreenReader(JarvisAccessibilityService.instance)
     private val graphifyRepo = GraphifyRepository(context)
     private val batteryManager = context.getSystemService(Context.BATTERY_SERVICE) as BatteryManager
     
@@ -87,7 +87,8 @@ class ScreenWatcher(private val context: Context, private val agentCore: com.ope
                 
                 if (triggered) {
                     executeAction(rule.action, screenText)
-                    rule.lastTriggered = now
+                    val index = rules.indexOfFirst { it.id == rule.id }
+                    if (index >= 0) rules[index] = rule.copy(lastTriggered = now)
                 }
             }
         } catch (e: Exception) {
