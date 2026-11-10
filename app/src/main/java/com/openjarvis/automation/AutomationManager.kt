@@ -63,7 +63,7 @@ class AutomationManager(private val context: Context) {
     }
     
     suspend fun runNow(id: String) = withContext(Dispatchers.IO) {
-        val automation = dao.getById(id) ?: return@withContext
+        val automation = dao.getById(id)?.toAutomation() ?: return@withContext
         executeAutomation(automation)
     }
     
@@ -143,7 +143,7 @@ class AutomationManager(private val context: Context) {
             lastResult = result,
             runCount = automation.runCount + 1
         )
-        dao.update(updated)
+        dao.update(updated.toEntity())
     }
     
     private fun calculateDelay(targetHour: Int, targetMinute: Int): Long {
