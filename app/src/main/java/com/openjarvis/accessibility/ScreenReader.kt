@@ -35,7 +35,7 @@ class ScreenReader(private val service: JarvisAccessibilityService?) {
     }
 
     fun findNodeByText(text: String): AccessibilityNodeInfo? {
-        val rootNode = service.rootInActiveWindow ?: return null
+        val rootNode = service?.rootInActiveWindow ?: return null
         val result = findNodeRecursive(rootNode, text)
         rootNode.recycle()
         return result
