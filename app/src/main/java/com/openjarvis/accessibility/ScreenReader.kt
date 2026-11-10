@@ -69,7 +69,7 @@ class ScreenReader(private val service: JarvisAccessibilityService?) {
     }
 
     fun findNodeByHint(hint: String): AccessibilityNodeInfo? {
-        val rootNode = service.rootInActiveWindow ?: return null
+        val rootNode = service?.rootInActiveWindow ?: return null
         val result = findHintRecursive(rootNode, hint)
         rootNode.recycle()
         return result
