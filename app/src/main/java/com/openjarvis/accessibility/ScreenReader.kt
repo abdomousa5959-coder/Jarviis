@@ -3,10 +3,10 @@ package com.openjarvis.accessibility
 import android.view.accessibility.AccessibilityNodeInfo
 import java.util.ArrayDeque
 
-class ScreenReader(private val service: JarvisAccessibilityService) {
+class ScreenReader(private val service: JarvisAccessibilityService?) {
 
     fun extractAllText(): String {
-        val rootNode = service.rootInActiveWindow ?: return ""
+        val rootNode = service?.rootInActiveWindow ?: return ""
         val builder = StringBuilder()
         extractTextRecursive(rootNode, builder)
         rootNode.recycle()
