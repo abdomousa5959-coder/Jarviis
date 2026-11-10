@@ -92,7 +92,7 @@ class AppBuilderMode(private val context: Context) {
             FileSpec("settings.gradle", FileType.GRADLE),
             FileSpec("gradle.properties", FileType.PROPERTIES),
             FileSpec("local.properties", FileType.PROPERTIES),
-            FileSpec("app/proguard-rules.pro", FileType.PROGUARD),
+            FileSpec("app/proguard-rules.pro", FileType.PROPERTIES),
             FileSpec("README.md", FileType.MARKDOWN)
         ) + spec.screens.map { screen ->
             FileSpec(
